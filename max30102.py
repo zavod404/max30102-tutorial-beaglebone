@@ -4,7 +4,7 @@
 from __future__ import print_function
 from time import sleep
 
-import RPi.GPIO as GPIO
+import Adafruit_BBIO.GPIO as GPIO
 import smbus
 
 # i2c address-es
@@ -46,9 +46,9 @@ MAX_BRIGHTNESS = 255
 
 
 class MAX30102():
-    # by default, this assumes that physical pin 7 (GPIO 4) is used as interrupt
+    # by default, this assumes that pin P9_16 is used as interrupt
     # by default, this assumes that the device is at 0x57 on channel 1
-    def __init__(self, channel=1, address=0x57, gpio_pin=7):
+    def __init__(self, channel=1, address=0x57, gpio_pin='P9_16'):
         print("Channel: {0}, address: 0x{1:x}".format(channel, address))
         self.address = address
         self.channel = channel
@@ -56,7 +56,6 @@ class MAX30102():
         self.interrupt = gpio_pin
 
         # set gpio mode
-        GPIO.setmode(GPIO.BOARD)
         GPIO.setup(self.interrupt, GPIO.IN)
 
         self.reset()
@@ -64,7 +63,8 @@ class MAX30102():
         sleep(1)  # wait 1 sec
 
         # read & clear interrupt register (read 1 byte)
-        reg_data = self.bus.read_i2c_block_data(self.address, REG_INTR_STATUS_1, 1)
+        reg_data = self.bus.read_i2c_block_data(
+            self.address, REG_INTR_STATUS_1, 1)
         # print("[SETUP] reset complete with interrupt register0: {0}".format(reg_data))
         self.setup()
         # print("[SETUP] setup complete")
@@ -104,7 +104,8 @@ class MAX30102():
         self.bus.write_i2c_block_data(self.address, REG_FIFO_CONFIG, [0x4f])
 
         # 0x02 for read-only, 0x03 for SpO2 mode, 0x07 multimode LED
-        self.bus.write_i2c_block_data(self.address, REG_MODE_CONFIG, [led_mode])
+        self.bus.write_i2c_block_data(
+            self.address, REG_MODE_CONFIG, [led_mode])
         # 0b 0010 0111
         # SPO2_ADC range = 4096nA, SPO2 sample rate = 100Hz, LED pulse-width = 411uS
         self.bus.write_i2c_block_data(self.address, REG_SPO2_CONFIG, [0x27])
@@ -129,8 +130,10 @@ class MAX30102():
         ir_led = None
 
         # read 1 byte from registers (values are discarded)
-        reg_INTR1 = self.bus.read_i2c_block_data(self.address, REG_INTR_STATUS_1, 1)
-        reg_INTR2 = self.bus.read_i2c_block_data(self.address, REG_INTR_STATUS_2, 1)
+        reg_INTR1 = self.bus.read_i2c_block_data(
+            self.address, REG_INTR_STATUS_1, 1)
+        reg_INTR2 = self.bus.read_i2c_block_data(
+            self.address, REG_INTR_STATUS_2, 1)
 
         # read 6-byte data from the device
         d = self.bus.read_i2c_block_data(self.address, REG_FIFO_DATA, 6)

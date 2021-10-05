@@ -1,4 +1,4 @@
-# max30102-tutorial-raspberrypi
+# max30102-tutorial-beaglebone
 
 This repository is unofficial porting of Arduino sample code of MAXRESDEF117#(max30102) HR/SpO2 sensor.
 
@@ -12,7 +12,7 @@ Related Qiita post (Japanese): https://qiita.com/vrn/items/1ac58c61194b23af1d8c
 - `max30102.py` contains a class which has some setup functions and sensor-reading functions
 - `hrdump.py` uses `max30102.py` and records the values read by the sensor (sample logs are`ir.log` and `red.log`)
 - `hrcalc.py` provides a function which calcs HR and SpO2 (but experimental)
-- `makegraph.py` can visualize the log data (but it does not work on raspberry pi cli)
+- `makegraph.py` can visualize the log data (but it does not work on raspberry pi / beaglebone cli)
 
 ## Run
 
@@ -55,7 +55,7 @@ If your HR sensor's address is not `0x57`, `max30102.MAX30102()` should be modif
 `hrcalc.py` has a function `calc_hr_and_spo2(ir_data, red_data) -> (hr, hr_valid, spo2, spo2_valid)`
 which works as an approximation of `maxim_heart_rate_and_oxygen_saturation` in the original Arduino implementation.
 
-**The resulting HR & SpO2 may be different between original implementation and this implementation.**  
+**The resulting HR & SpO2 may be different between original implementation and this implementation.**
 
 ```python
 # after you load red and ir
@@ -143,6 +143,6 @@ while True:
     print(hrcalc.calc_hr_and_spo2(ir, red))
 ```
 
------
+---
 
 Caution: Do not use these files at critical/fatal situations. No guarantee of calculation result.
